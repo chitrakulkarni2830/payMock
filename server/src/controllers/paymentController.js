@@ -1,6 +1,5 @@
 const { nanoid } = require("nanoid");
 const Payment = require("../models/Payment");
-const { captureOwnerStack } = require("react");
 
 const createPayment = async (req,res) => {
     try{
