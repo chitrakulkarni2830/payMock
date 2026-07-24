@@ -64,6 +64,42 @@ const getPayment = async (req, res) => {
 };
 
 /**
+ * Helper: Validate card expiry format (MM/YY), month range (01-12), and non-expired date.
+ */
+const isValidExpiry = (expiry) => {
+  if (!expiry || typeof expiry !== "string") return false;
+  const match = expiry.trim().match(/^(0[1-9]|1[0-2])\/([0-9]{2})$/);
+  if (!match) return false;
+
+  const month = parseInt(match[1], 10);
+  const year = parseInt(`20${match[2]}`, 10);
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 1-indexed (1-12)
+
+  if (year < currentYear) return false;
+  if (year === currentYear && month < currentMonth) return false;
+
+  return true;
+};
+
+/**
+ * Helper: Validate card number (13-19 digits).
+ */
+const isValidCardNumber = (cardNumber) => {
+  const digits = (cardNumber || "").replace(/\s/g, "");
+  return /^\d{13,19}$/.test(digits);
+};
+
+/**
+ * Helper: Validate CVV (3-4 digits).
+ */
+const isValidCVV = (cvv) => {
+  return /^\d{3,4}$/.test(cvv || "");
+};
+
+/**
  * POST /api/payments/:paymentId/process
  *
  * Simulates payment processing for UPI or Card.
@@ -98,11 +134,34 @@ const processPayment = async (req, res) => {
       });
     }
 
-    if (paymentMethod === "Card" && (!cardNumber || !cardHolderName || !expiry || !cvv)) {
-      return res.status(400).json({
-        success: false,
-        message: "All card details are required",
-      });
+    if (paymentMethod === "Card") {
+      if (!cardNumber || !cardHolderName || !expiry || !cvv) {
+        return res.status(400).json({
+          success: false,
+          message: "All card details are required",
+        });
+      }
+
+      if (!isValidExpiry(expiry)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired card expiry date. Format must be MM/YY with a valid month (01-12).",
+        });
+      }
+
+      if (!isValidCardNumber(cardNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid card number",
+        });
+      }
+
+      if (!isValidCVV(cvv)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid CVV code",
+        });
+      }
     }
 
     // Check existing payment status before processing

@@ -1,7 +1,12 @@
 import { AtSign } from "lucide-react";
 import Input from "../common/Input";
 
-function UPIForm({ upiId, setUpiId }) {
+function UPIForm({ upiId, setUpiId, error, setError }) {
+  const handleChange = (e) => {
+    setUpiId(e.target.value);
+    if (setError && error) setError("");
+  };
+
   return (
     <div className="animate-fade-in-up">
       <Input
@@ -10,12 +15,15 @@ function UPIForm({ upiId, setUpiId }) {
         type="text"
         placeholder="yourname@upi"
         value={upiId}
-        onChange={(e) => setUpiId(e.target.value)}
+        onChange={handleChange}
+        error={error}
       />
 
-      <p className="mt-2.5 text-xs text-muted">
-        Enter your UPI ID linked to any bank account
-      </p>
+      {!error && (
+        <p className="mt-2.5 text-xs text-muted">
+          Enter your UPI ID linked to any bank account
+        </p>
+      )}
     </div>
   );
 }

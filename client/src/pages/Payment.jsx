@@ -27,10 +27,30 @@ function Payment() {
     cvv: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   // Ref-based guard: prevents double-submitting the Pay button.
   // The backend already rejects non-Pending payments, but this stops
   // the second network call from being issued at all.
   const isPaying = useRef(false);
+
+  const validateExpiry = (expiry) => {
+    if (!expiry || typeof expiry !== "string") return false;
+    const match = expiry.trim().match(/^(0[1-9]|1[0-2])\/([0-9]{2})$/);
+    if (!match) return false;
+
+    const month = parseInt(match[1], 10);
+    const year = parseInt(`20${match[2]}`, 10);
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (year < currentYear) return false;
+    if (year === currentYear && month < currentMonth) return false;
+
+    return true;
+  };
 
   useEffect(() => {
     // Cancellation flag so StrictMode's double-mount doesn't set state
@@ -65,6 +85,47 @@ function Payment() {
   }, [paymentId, navigate]);
 
   const handlePay = async () => {
+    // Validate form fields first
+    const newErrors = {};
+
+    if (paymentMethod === "UPI") {
+      if (!upiId.trim()) {
+        newErrors.upiId = "UPI ID is required";
+      } else if (!upiId.includes("@")) {
+        newErrors.upiId = "Please enter a valid UPI ID (e.g. user@upi)";
+      }
+    } else if (paymentMethod === "Card") {
+      const rawCardNumber = card.cardNumber.replace(/\s/g, "");
+      if (!rawCardNumber) {
+        newErrors.cardNumber = "Card number is required";
+      } else if (rawCardNumber.length < 13) {
+        newErrors.cardNumber = "Card number must be at least 13 digits";
+      }
+
+      if (!card.cardHolderName.trim()) {
+        newErrors.cardHolderName = "Cardholder name is required";
+      }
+
+      if (!card.expiry) {
+        newErrors.expiry = "Expiry date is required";
+      } else if (!validateExpiry(card.expiry)) {
+        newErrors.expiry = "Invalid expiry (MM/YY, e.g. 12/28)";
+      }
+
+      if (!card.cvv) {
+        newErrors.cvv = "CVV is required";
+      } else if (card.cvv.length < 3) {
+        newErrors.cvv = "CVV must be 3-4 digits";
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+
     // Abort immediately if a pay request is already in-flight.
     if (isPaying.current) return;
     isPaying.current = true;
@@ -161,9 +222,19 @@ function Payment() {
             {/* Payment form */}
             <div style={{ marginTop: "24px" }}>
               {paymentMethod === "UPI" ? (
-                <UPIForm upiId={upiId} setUpiId={setUpiId} />
+                <UPIForm
+                  upiId={upiId}
+                  setUpiId={setUpiId}
+                  error={errors.upiId}
+                  setError={(err) => setErrors((prev) => ({ ...prev, upiId: err }))}
+                />
               ) : (
-                <CardForm card={card} setCard={setCard} />
+                <CardForm
+                  card={card}
+                  setCard={setCard}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
               )}
             </div>
 

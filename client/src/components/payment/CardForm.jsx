@@ -1,9 +1,14 @@
 import { CreditCard, User, Calendar, Lock } from "lucide-react";
 import Input from "../common/Input";
 
-function CardForm({ card, setCard }) {
+function CardForm({ card, setCard, errors = {}, setErrors }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Clear error for field being edited
+    if (setErrors && errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
 
     if (name === "cardNumber") {
       // Allow only digits and spaces, format as groups of 4
@@ -42,6 +47,7 @@ function CardForm({ card, setCard }) {
         onChange={handleChange}
         inputMode="numeric"
         autoComplete="cc-number"
+        error={errors.cardNumber}
       />
 
       <Input
@@ -52,6 +58,7 @@ function CardForm({ card, setCard }) {
         value={card.cardHolderName}
         onChange={handleChange}
         autoComplete="cc-name"
+        error={errors.cardHolderName}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -64,6 +71,7 @@ function CardForm({ card, setCard }) {
           onChange={handleChange}
           inputMode="numeric"
           autoComplete="cc-exp"
+          error={errors.expiry}
         />
 
         <Input
@@ -76,6 +84,7 @@ function CardForm({ card, setCard }) {
           onChange={handleChange}
           inputMode="numeric"
           autoComplete="cc-csc"
+          error={errors.cvv}
         />
       </div>
     </div>
