@@ -27,6 +27,12 @@ The platform provides a seamless end-to-end user experience where a merchant cre
 - **Engine**: MongoDB Atlas
 - **ODM**: Mongoose 9
 
+### Cloud & Deployment Infrastructure
+- **Frontend Hosting**: Vercel (`https://pay-mock.vercel.app`)
+- **Backend API Hosting**: Render (`https://paymock.onrender.com`)
+- **Database Engine**: MongoDB Atlas Cloud Cluster
+- **Continuous Integration**: GitHub Git Integration (Automated push deployments)
+
 ### Quality Assurance & E2E Testing
 - **Browser Automation**: Playwright 1.61 (Chromium headless testing)
 - **API Spec Validation**: Postman collection suite
