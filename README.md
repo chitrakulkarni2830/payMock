@@ -81,33 +81,15 @@ Request Body
 
 ---
 
-### Update Payment Status
-
-**PATCH**
-
-```
-/api/payments/:paymentId
-```
-
-Request Body
-
-```json
-{
-  "status": "Success"
-}
-```
-
----
-
 ### Process Payment
 
-**PATCH**
+**POST**
 
 ```
-/api/payments/:paymentId/pay
+/api/payments/:paymentId/process
 ```
 
-### UPI
+#### UPI Payload
 
 ```json
 {
@@ -116,7 +98,7 @@ Request Body
 }
 ```
 
-### Card
+#### Card Payload
 
 ```json
 {
@@ -127,6 +109,7 @@ Request Body
   "cvv": "123"
 }
 ```
+
 
 ---
 

@@ -135,7 +135,7 @@ Payments
 ```
 POST /api/payments
 GET /api/payments/:paymentId
-PATCH /api/payments/:paymentId
+POST /api/payments/:paymentId/process
 ```
 
 ---

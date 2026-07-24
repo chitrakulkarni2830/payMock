@@ -1,0 +1,29 @@
+{
+  "name": "paymock",
+  "version": "1.0.0",
+  "description": "A simple mock payment gateway built with **Node.js**, **Express.js**, and **MongoDB** to demonstrate how an online payment system works.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chitrakulkarni2830/payMock.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chitrakulkarni2830/payMock/issues"
+  },
+  "homepage": "https://github.com/chitrakulkarni2830/payMock#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}

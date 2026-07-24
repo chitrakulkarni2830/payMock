@@ -14,8 +14,6 @@ app.get("/", (req, res) => {
     });
 });
 
-module.exports = app;
-
 app.use("/api/payments", paymentRoutes);
 
 module.exports = app;

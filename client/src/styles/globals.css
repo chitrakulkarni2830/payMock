@@ -1,0 +1,283 @@
+/* ============================================================
+   PayMock — Design System
+   A premium fintech checkout experience
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ============================================================
+   Theme Tokens (Tailwind v4)
+   ============================================================ */
+
+@theme {
+  /* ---- Palette ---- */
+  --color-primary: #16697A;
+  --color-primary-dark: #0e4f5d;
+  --color-primary-light: #1d7f95;
+  --color-secondary: #489FB5;
+  --color-secondary-light: #6bb4c5;
+  --color-accent: #82C0CC;
+  --color-accent-light: #a8d5dd;
+  --color-background: #EDE7E3;
+  --color-background-warm: #f6f2ee;
+  --color-surface: #ffffff;
+  --color-cta: #FFA62B;
+  --color-cta-hover: #f09415;
+  --color-cta-light: #ffbb5c;
+  --color-success: #0d9f4f;
+  --color-success-light: #ecfdf3;
+  --color-danger: #e03e3e;
+  --color-danger-light: #fef2f2;
+  --color-text: #1a2332;
+  --color-text-secondary: #4b5c6e;
+  --color-muted: #8896a5;
+  --color-border: #e2e0de;
+  --color-border-light: #f0eeec;
+
+  /* ---- Typography ---- */
+  --font-family-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Animations ---- */
+  --animate-fade-in: fade-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in-down: fade-in-down 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-scale-in: scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-pulse-ring: pulse-ring 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-check-pop: check-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-check-draw: check-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+  --animate-shake: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  --animate-x-draw: x-draw 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-dots: dots 1.4s steps(4, end) infinite;
+  --animate-spin-slow: spin 1.2s linear infinite;
+  --animate-float: float 3s ease-in-out infinite;
+}
+
+/* ============================================================
+   Base Reset & Foundation
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
+  background-color: var(--color-background);
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(22, 105, 122, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(130, 192, 204, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 166, 43, 0.03) 0%, transparent 60%);
+  color: var(--color-text);
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+#root {
+  isolation: isolate;
+}
+
+::selection {
+  background: rgba(22, 105, 122, 0.15);
+  color: var(--color-text);
+}
+
+
+
+/* ============================================================
+   Form Foundation
+   ============================================================ */
+
+input,
+select,
+button,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* ============================================================
+   Keyframe Animations
+   ============================================================ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes check-draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+@keyframes x-draw {
+  from { stroke-dashoffset: 56; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes dots {
+  0%, 20% { content: ""; }
+  40% { content: "."; }
+  60% { content: ".."; }
+  80%, 100% { content: "..."; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   Utility: Animated Dots
+   ============================================================ */
+
+.animate-dots::after {
+  content: "";
+  animation: dots 1.4s steps(4, end) infinite;
+}
