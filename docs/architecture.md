@@ -1,157 +1,122 @@
-# PayMock Architecture
+# 🏗️ PayMock Architecture & Technical Design Specification (v2.0.0)
 
-## Overview
+## System Overview
 
-PayMock is a simulated payment gateway built with the MERN stack.
+**PayMock** is a simulated online payment gateway platform built with the MERN stack (**MongoDB**, **Express**, **React**, **Node.js**). It emulates real-world payment gateway lifecycle events without external banking or live credit card processing integrations.
 
-It recreates a real-world online payment experience where a merchant creates a payment request, generates a unique payment link, and a customer completes the payment using a mock checkout flow.
-
-The project is intended for learning and portfolio purposes only. No real money, banking APIs, or third-party payment gateways are used.
+The platform provides a seamless end-to-end user experience where a merchant creates an order checkout, the customer selects a payment method (UPI or Card), the backend handles processing asynchronously, and persistent receipts are generated.
 
 ---
 
-## Tech Stack
+## Technical Stack Architecture
 
-### Frontend
-- React
-- React Router
-- Tailwind CSS
-- Axios
+### Frontend Layer
+- **Framework**: React 19 + Vite 8
+- **Routing**: React Router 7 (Single-Page Application)
+- **Styling**: Tailwind CSS v4 (Glassmorphic dark theme)
+- **State & HTTP**: Local React hooks + Axios REST client
+- **Icons**: Lucide React
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
+### Backend Layer
+- **Runtime**: Node.js v18+
+- **Server Framework**: Express 5
+- **Identifier Generation**: NanoID (10-character collision-resistant unique tokens)
+- **Environment**: Dotenv
 
----
+### Database Layer
+- **Engine**: MongoDB Atlas
+- **ODM**: Mongoose 9
 
-## Project Structure
-
-```
-paymock/
-
-├── client/          # React application
-├── server/          # Express API
-├── docs/            # Project documentation
-└── README.md
-```
+### Quality Assurance & E2E Testing
+- **Browser Automation**: Playwright 1.61 (Chromium headless testing)
+- **API Spec Validation**: Postman collection suite
 
 ---
 
-## Application Flow
+## High-Level Architecture Diagram
 
 ```
-Merchant
-    │
-    ▼
-Create Payment Request
-    │
-    ▼
-Generate Unique Payment Link
-    │
-    ▼
-Customer Opens Link
-    │
-    ▼
-Choose Payment Method
-    │
-    ▼
-Complete Mock Payment
-    │
-    ▼
-Payment Status Updated
-```
-
----
-
-## Frontend
-
-The React application contains:
-
-- Landing Page
-- Merchant Payment Form
-- Checkout Page
-- Payment Method Components
-- OTP Verification
-- Success / Failure Screen
-
----
-
-## Backend
-
-The Express server is responsible for:
-
-- Merchant Authentication
-- Creating Payment Requests
-- Generating Unique Payment IDs
-- Retrieving Payment Details
-- Updating Payment Status
-
----
-
-## Database
-
-### Users
-
-Stores merchant accounts.
-
-```
-User
-- name
-- email
-- password
-```
-
-### Payments
-
-Stores payment requests.
-
-```
-Payment
-- paymentId
-- merchantName
-- productName
-- amount
-- paymentMethod
-- status
-- createdAt
+┌────────────────────────────────────────────────────────────────────────┐
+│                            REACT FRONTEND                              │
+│                                                                        │
+│  /checkout ──► /payment/:id ──► /processing/:id ──► /success/:id      │
+│                                                          │             │
+│                                                   /payment-details/:id │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │  JSON over HTTP
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                           EXPRESS REST SERVER                          │
+│                                                                        │
+│  • POST /api/payments                   (Initialize payment)           │
+│  • POST /api/payments/:paymentId/process (Process UPI/Card payload)    │
+│  • GET  /api/payments/:paymentId         (Fetch payment receipt)       │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │  Mongoose ODM Connection
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                             MONGODB ATLAS                              │
+│                                                                        │
+│  Collection: payments                                                  │
+│  • paymentId (indexed, unique NanoID)                                  │
+│  • status ("Pending" ──► "Success" / "Failed")                         │
+│  • merchantName, customerName, amount, currency, paymentMethod         │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## API Endpoints
+## Core Data Schema
 
-Authentication
+### Payment Document (`payments`)
 
-```
-POST /api/auth/signup
-POST /api/auth/login
-```
-
-Payments
-
-```
-POST /api/payments
-GET /api/payments/:paymentId
-POST /api/payments/:paymentId/process
+```javascript
+{
+  paymentId: { type: String, required: true, unique: true },
+  merchantName: { type: String, required: true, trim: true },
+  customerName: { type: String, required: true, trim: true },
+  amount: { type: Number, required: true, min: 1 },
+  currency: { type: String, default: "INR" },
+  paymentMethod: { 
+    type: String, 
+    enum: ["UPI", "Card", "Net Banking", "Wallet"], 
+    default: "UPI" 
+  },
+  status: { 
+    type: String, 
+    enum: ["Pending", "Success", "Failed"], 
+    default: "Pending" 
+  },
+  createdAt: Date,
+  updatedAt: Date
+}
 ```
 
 ---
 
-## Payment Status
+## Payment State Machine
 
-- Pending
-- Success
-- Failed
+```
+              ┌─────────┐
+              │ Pending │ (Initial state on creation)
+              └────┬────┘
+                   │
+         Process Request Submitted
+                   │
+                   ▼
+              ┌─────────┐
+              │ Success │ (Terminal state)
+              └─────────┘
+```
+
+> **State Protection Rule**: Once a payment transitions to `Success` or `Failed`, any subsequent processing attempt returns HTTP 400 Bad Request to guarantee idempotency.
 
 ---
 
-## Project Goals
+## API Routes & Endpoints
 
-- Build a complete MERN application
-- Demonstrate frontend and backend integration
-- Simulate a real payment gateway experience
-- Focus on clean UI and user experience
-- Keep the project small, simple, and production-like
+| Method | Path | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/payments` | Initializes a new transaction and generates `paymentId` |
+| `GET` | `/api/payments/:paymentId` | Retrieves payment audit record |
+| `POST` | `/api/payments/:paymentId/process` | Processes UPI or Card details for pending payment |

@@ -1,7 +1,7 @@
 {
   "name": "paymock",
-  "version": "1.0.0",
-  "description": "A simple mock payment gateway built with **Node.js**, **Express.js**, and **MongoDB** to demonstrate how an online payment system works.",
+  "version": "2.0.0",
+  "description": "A production-grade simulated payment gateway platform built with Node.js, Express, React, Tailwind CSS, MongoDB, and Playwright.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
