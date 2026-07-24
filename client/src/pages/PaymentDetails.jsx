@@ -148,14 +148,7 @@ function PaymentDetails() {
               })}
             </div>
 
-            <div style={{ marginTop: "24px" }}>
-              <Link to="/checkout">
-                <Button variant="secondary">
-                  New Payment
-                  <ArrowRight size={15} />
-                </Button>
-              </Link>
-            </div>
+
           </div>
         </Card>
       </div>

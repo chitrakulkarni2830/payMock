@@ -56,13 +56,6 @@ function Success() {
                   <ArrowRight size={15} />
                 </Button>
               </Link>
-
-              <Link
-                to="/checkout"
-                style={{ display: "block", marginTop: "4px", fontSize: "13px", fontWeight: "700", color: "#16697A", textAlign: "center" }}
-              >
-                Make Another Payment
-              </Link>
             </div>
           </div>
         </Card>

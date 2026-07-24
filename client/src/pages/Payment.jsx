@@ -40,7 +40,13 @@ function Payment() {
     const fetchPayment = async () => {
       try {
         const response = await getPayment(paymentId);
-        if (!isCancelled) setPayment(response.data);
+        if (!isCancelled) {
+          if (response.data?.status === "Success") {
+            navigate(`/success/${paymentId}`, { replace: true });
+            return;
+          }
+          setPayment(response.data);
+        }
       } catch (error) {
         if (!isCancelled) {
           console.error(error);
